@@ -96,8 +96,6 @@ int main_watch(char *argv0, int argc, char** argv) {
             throw std::runtime_error("Could not resolve path");
         }
 
-        fprintf(stderr, "Converted %s to %s\n", in_path, out_path);
-
         watch_paths.emplace_back(out_path);
         prefix_map.emplace_back(out_path, argv[i+1]);
     }

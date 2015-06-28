@@ -27,12 +27,6 @@ int main_receive(__unused char* argv0, __unused int argc, __unused char** argv) 
     UtimesInjectPlugin injector;
 
     ReceiveCallback callback = [&injector](std::vector<std::string> paths) {
-        fprintf(stderr, "Got event\n");
-
-        for (auto& path : paths) {
-            fprintf(stderr, "Path: %s\n", path.c_str());
-        }
-
         injector.inject(paths);
     };
 
