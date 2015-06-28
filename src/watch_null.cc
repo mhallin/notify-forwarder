@@ -5,8 +5,6 @@
 #include <condition_variable>
 
 class NullWatchPluginImpl {
-    public: std::mutex wait_mutex;
-    public: std::condition_variable cv;
 };
 
 NullWatchPlugin::NullWatchPlugin(
@@ -19,10 +17,7 @@ NullWatchPlugin::~NullWatchPlugin() {
 }
 
 void NullWatchPlugin::start() {
-    std::unique_lock<std::mutex> lock(m_impl->wait_mutex);
-    m_impl->cv.wait(lock);
 }
 
 void NullWatchPlugin::stop() {
-    m_impl->cv.notify_all();
 }
