@@ -1,4 +1,4 @@
-#ifdef __GNUC__
+#ifndef __clang__
 
 #  define __unused __attribute__((unused))
 

@@ -1,7 +1,6 @@
 OUT=_build/notify-forwarder
 
-SRCS=src/watch_fsevents.cc \
-	src/watch_null.cc \
+SRCS=src/watch_null.cc \
 	src/notify_udp.cc \
 	src/receive_udp.cc \
 	src/inject_utimes.cc \
@@ -9,14 +8,35 @@ SRCS=src/watch_fsevents.cc \
 	src/main_receive.cc \
 	src/main_watch.cc
 
+OSNAME=$(shell uname -s)
+
+CXXFLAGS=-MD -g -O0 -std=c++11
+
+ifeq ($(OSNAME),Darwin)
+	SRCS+=src/watch_fsevents.cc
+
+	CXXWARNINGS=-Weverything -Wno-c++98-compat -Wno-weak-vtables -Wno-padded
+	LDFLAGS=-framework CoreServices
+	CXXFLAGS+=-stdlib=libc++
+
+	WATCH_PLUGIN_TYPE=FSEventsWatchPlugin
+endif
+
+ifeq ($(OSNAME),Linux)
+	WATCH_PLUGIN_TYPE=NullWatchPlugin
+endif
+
+ifeq ($(OSNAME),FreeBSD)
+	CXXWARNINGS=-Weverything -Wno-c++98-compat -Wno-weak-vtables -Wno-padded
+	CXXFLAGS+=-stdlib=libc++
+
+	WATCH_PLUGIN_TYPE=NullWatchPlugin
+endif
+
+CXXFLAGS+=$(CXXWARNINGS) -D WATCH_PLUGIN_TYPE=$(WATCH_PLUGIN_TYPE)
+
 OBJS=$(SRCS:.cc=.o)
 DEPFILES=$(SRCS:.cc=.d)
-
-CXXWARNINGS=-Weverything -Wno-c++98-compat -Wno-weak-vtables -Wno-padded
-WATCH_PLUGIN_TYPE?=FSEventsWatchPlugin
-
-CXXFLAGS=-MD -std=c++11 -stdlib=libc++ -g -O0 $(CXXWARNINGS) -D WATCH_PLUGIN_TYPE=$(WATCH_PLUGIN_TYPE)
-LDFLAGS=-framework CoreServices
 
 _build/notify-forwarder: _build $(OBJS)
 	$(CXX) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS)
