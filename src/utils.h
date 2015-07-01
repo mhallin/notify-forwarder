@@ -1,6 +1,8 @@
 #pragma once
 
-#include "signal.h"
+#include <signal.h>
+
+#include <stdexcept>
 
 template<typename T>
 class VariableOverrideGuard {
@@ -24,10 +26,15 @@ typedef void (*SignalHandler)(int);
 class SignalOverride {
     public: SignalOverride(int sig, SignalHandler handler)
     : m_sig(sig), m_old_handler(signal(sig, handler)) {
+        if (m_old_handler == SIG_ERR) {
+            throw std::logic_error("Could not override signal");
+        }
     }
 
     public: ~SignalOverride() {
-        signal(m_sig, m_old_handler);
+        if (m_old_handler != SIG_ERR) {
+            signal(m_sig, m_old_handler);
+        }
     }
 
     private: int m_sig;
