@@ -11,6 +11,7 @@
 #include "watch.h"
 #include "watch_fsevents.h"
 #include "watch_null.h"
+#include "watch_inotify.h"
 
 #include "notify.h"
 #include "notify_udp.h"

@@ -23,7 +23,9 @@ ifeq ($(OSNAME),Darwin)
 endif
 
 ifeq ($(OSNAME),Linux)
-	WATCH_PLUGIN_TYPE=NullWatchPlugin
+	SRCS+=src/watch_inotify.cc
+
+	WATCH_PLUGIN_TYPE=InotifyWatchPlugin
 endif
 
 ifeq ($(OSNAME),FreeBSD)
