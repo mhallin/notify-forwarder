@@ -12,7 +12,7 @@ class UDPNotifyPluginImpl {
     public: sockaddr_in dest_addr;
 };
 
-UDPNotifyPlugin::UDPNotifyPlugin()
+UDPNotifyPlugin::UDPNotifyPlugin(const std::string& addr, short port)
 : m_impl(new UDPNotifyPluginImpl()) {
     m_impl->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (m_impl->socket_fd == -1) {
@@ -22,8 +22,8 @@ UDPNotifyPlugin::UDPNotifyPlugin()
     sockaddr_in dest_addr;
     memset(&dest_addr, 0, sizeof(dest_addr));
     dest_addr.sin_family = AF_INET;
-    dest_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    dest_addr.sin_port = htons(29324);
+    dest_addr.sin_addr.s_addr = inet_addr(addr.c_str());
+    dest_addr.sin_port = htons(port);
 
     m_impl->dest_addr = dest_addr;
 }

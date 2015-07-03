@@ -8,6 +8,7 @@ class UDPReceivePluginImpl;
 
 class UDPReceivePlugin : public IReceivePlugin {
     public: UDPReceivePlugin(
+        short port,
         const ReceiveCallback& callback);
     public: virtual ~UDPReceivePlugin();
 

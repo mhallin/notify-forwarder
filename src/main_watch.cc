@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <sys/param.h>
 #include <sysexits.h>
+#include <string.h>
 
 #include <chrono>
 #include <unordered_map>
@@ -35,7 +36,12 @@ static void handle_sigint(__unused int signal) {
 }
 
 static void print_usage(char *argv0) {
-    fprintf(stderr, "Usage: %s watch (<from> <to>)...\n", argv0);
+    fprintf(stderr, "Usage: %s watch [-c host[:port]] (<from> <to>)...\n", argv0);
+    fprintf(stderr, "\n");
+    fprintf(stderr, "  (<from> <to>)   pairs of paths, the first being the local path to watch\n");
+    fprintf(stderr, "                  and the second one being the remote path\n");
+    fprintf(stderr, "  -c host:[port]  specifies where to connect. Defaults to 127.0.0.1:29324\n");
+    fprintf(stderr, "\n");
 }
 
 static std::string replace_prefix(const PrefixMap &prefix_map, std::string src) {
@@ -84,6 +90,30 @@ int main_watch(char *argv0, int argc, char** argv) {
     std::vector<std::pair<std::string, std::string>> prefix_map;
     FeedbackMap feedback_map;
 
+    std::string dest_addr = "127.0.0.1";
+    short port = 29324;
+
+    if (argc && strcmp(argv[0], "-c") == 0) {
+        if (argc < 2) {
+            print_usage(argv0);
+            return EX_USAGE;
+        }
+
+        std::string param = argv[1];
+        size_t pos = param.find(':');
+
+        if (pos == std::string::npos) {
+            dest_addr = param;
+        }
+        else {
+            dest_addr = param.substr(0, pos);
+            port = static_cast<short>(atoi(param.substr(pos + 1).c_str()));
+        }
+
+        argc -= 2;
+        argv += 2;
+    }
+
     if (argc % 2 != 0 || argc == 0) {
         print_usage(argv0);
         return EX_USAGE;
@@ -101,7 +131,7 @@ int main_watch(char *argv0, int argc, char** argv) {
         prefix_map.emplace_back(out_path, argv[i+1]);
     }
 
-    UDPNotifyPlugin notify_plugin;
+    UDPNotifyPlugin notify_plugin(dest_addr, port);
 
     WatchCallback callback = [&notify_plugin, &prefix_map, &feedback_map](std::vector<std::string> paths) {
         std::vector<std::string> out_paths;

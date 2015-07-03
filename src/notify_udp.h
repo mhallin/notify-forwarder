@@ -7,7 +7,7 @@
 class UDPNotifyPluginImpl;
 
 class UDPNotifyPlugin : public INotifyPlugin {
-    public: UDPNotifyPlugin();
+    public: UDPNotifyPlugin(const std::string& addr, short port);
     public: virtual ~UDPNotifyPlugin();
 
     public: virtual void notify(const std::vector<std::string> &paths);

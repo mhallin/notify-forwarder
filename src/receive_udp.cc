@@ -14,7 +14,9 @@ class UDPReceivePluginImpl {
     public: bool running;
 };
 
-UDPReceivePlugin::UDPReceivePlugin(const ReceiveCallback& callback)
+UDPReceivePlugin::UDPReceivePlugin(
+    short port,
+    const ReceiveCallback& callback)
 : m_impl(new UDPReceivePluginImpl()) {
     m_impl->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (m_impl->socket_fd == -1) {
@@ -25,7 +27,7 @@ UDPReceivePlugin::UDPReceivePlugin(const ReceiveCallback& callback)
     memset(&dest_addr, 0, sizeof(dest_addr));
     dest_addr.sin_family = AF_INET;
     dest_addr.sin_addr.s_addr = inet_addr("0.0.0.0");
-    dest_addr.sin_port = htons(29324);
+    dest_addr.sin_port = htons(port);
 
     int bind_result = bind(
         m_impl->socket_fd,
