@@ -1,19 +1,23 @@
-#include <stdio.h>
-#include <unistd.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <unistd.h>
 
 #include "notify_udp.h"
 
 class UDPNotifyPluginImpl {
-    public: int socket_fd;
-    public: sockaddr_in dest_addr;
+public:
+    int socket_fd;
+
+public:
+    sockaddr_in dest_addr;
 };
 
 UDPNotifyPlugin::UDPNotifyPlugin(const std::string& addr, short port)
-: m_impl(new UDPNotifyPluginImpl()) {
+    : m_impl(new UDPNotifyPluginImpl())
+{
     m_impl->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (m_impl->socket_fd == -1) {
         throw std::runtime_error("Could not create sending socket");
@@ -28,16 +32,17 @@ UDPNotifyPlugin::UDPNotifyPlugin(const std::string& addr, short port)
     m_impl->dest_addr = dest_addr;
 }
 
-UDPNotifyPlugin::~UDPNotifyPlugin() {
+UDPNotifyPlugin::~UDPNotifyPlugin()
+{
     if (m_impl->socket_fd >= 0) {
         close(m_impl->socket_fd);
     }
 }
 
-void UDPNotifyPlugin::notify(const std::vector<std::string>& paths) {
+void UDPNotifyPlugin::notify(const std::vector<std::string>& paths)
+{
     for (auto& path : paths) {
-        ssize_t sent_bytes = sendto(
-            m_impl->socket_fd,
+        ssize_t sent_bytes = sendto(m_impl->socket_fd,
             path.c_str(),
             path.size(),
             0,

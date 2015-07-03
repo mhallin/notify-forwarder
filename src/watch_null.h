@@ -7,13 +7,18 @@
 class NullWatchPluginImpl;
 
 class NullWatchPlugin : public IWatchPlugin {
-    public: NullWatchPlugin(
-        const std::vector<std::string>& paths,
-        const WatchCallback& callback);
-    public: ~NullWatchPlugin();
+public:
+    NullWatchPlugin(const std::vector<std::string>& paths, const WatchCallback& callback);
 
-    public: virtual void start();
-    public: virtual void stop();
+public:
+    ~NullWatchPlugin();
 
-    private: std::unique_ptr<NullWatchPluginImpl> m_impl;
+public:
+    virtual void start();
+
+public:
+    virtual void stop();
+
+private:
+    std::unique_ptr<NullWatchPluginImpl> m_impl;
 };

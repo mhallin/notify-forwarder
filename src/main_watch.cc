@@ -1,18 +1,19 @@
 #include <stdlib.h>
+#include <string.h>
 #include <sys/param.h>
 #include <sysexits.h>
-#include <string.h>
 
 #include <chrono>
 #include <unordered_map>
 
 #include "main.h"
+
 #include "utils.h"
 
 #include "watch.h"
 #include "watch_fsevents.h"
-#include "watch_null.h"
 #include "watch_inotify.h"
+#include "watch_null.h"
 
 #include "notify.h"
 #include "notify_udp.h"
@@ -24,9 +25,10 @@ typedef std::chrono::time_point<Clock> TimePoint;
 typedef std::unordered_map<std::string, TimePoint> FeedbackMap;
 typedef std::vector<std::pair<std::string, std::string>> PrefixMap;
 
-static IWatchPlugin *gCurrentWatchInstance = nullptr;
+static IWatchPlugin* gCurrentWatchInstance = nullptr;
 
-static void handle_sigint(__unused int signal) {
+static void handle_sigint(__unused int signal)
+{
     if (gCurrentWatchInstance) {
         gCurrentWatchInstance->stop();
     }
@@ -35,7 +37,8 @@ static void handle_sigint(__unused int signal) {
     }
 }
 
-static void print_usage(char *argv0) {
+static void print_usage(char* argv0)
+{
     fprintf(stderr, "Usage: %s watch [-c host[:port]] (<from> <to>)...\n", argv0);
     fprintf(stderr, "\n");
     fprintf(stderr, "  (<from> <to>)   pairs of paths, the first being the local path to watch\n");
@@ -44,7 +47,8 @@ static void print_usage(char *argv0) {
     fprintf(stderr, "\n");
 }
 
-static std::string replace_prefix(const PrefixMap &prefix_map, std::string src) {
+static std::string replace_prefix(const PrefixMap& prefix_map, std::string src)
+{
     for (const auto& pair : prefix_map) {
 
         if (src.substr(0, pair.first.size()) == pair.first) {
@@ -55,7 +59,8 @@ static std::string replace_prefix(const PrefixMap &prefix_map, std::string src) 
     return src;
 }
 
-static void clear_expired(FeedbackMap &feedback_map) {
+static void clear_expired(FeedbackMap& feedback_map)
+{
     TimePoint now = Clock::now();
 
     for (auto it = feedback_map.begin(); it != feedback_map.end();) {
@@ -68,8 +73,9 @@ static void clear_expired(FeedbackMap &feedback_map) {
     }
 }
 
-static std::vector<std::string> filter_feedback(FeedbackMap &feedback_map,
-                                                std::vector<std::string> paths) {
+static std::vector<std::string> filter_feedback(
+    FeedbackMap& feedback_map, std::vector<std::string> paths)
+{
     clear_expired(feedback_map);
 
     std::vector<std::string> out_paths;
@@ -85,7 +91,8 @@ static std::vector<std::string> filter_feedback(FeedbackMap &feedback_map,
     return out_paths;
 }
 
-int main_watch(char *argv0, int argc, char** argv) {
+int main_watch(char* argv0, int argc, char** argv)
+{
     std::vector<std::string> watch_paths;
     std::vector<std::pair<std::string, std::string>> prefix_map;
     FeedbackMap feedback_map;
@@ -128,20 +135,21 @@ int main_watch(char *argv0, int argc, char** argv) {
         }
 
         watch_paths.emplace_back(out_path);
-        prefix_map.emplace_back(out_path, argv[i+1]);
+        prefix_map.emplace_back(out_path, argv[i + 1]);
     }
 
     UDPNotifyPlugin notify_plugin(dest_addr, port);
 
-    WatchCallback callback = [&notify_plugin, &prefix_map, &feedback_map](std::vector<std::string> paths) {
-        std::vector<std::string> out_paths;
+    WatchCallback callback
+        = [&notify_plugin, &prefix_map, &feedback_map](std::vector<std::string> paths) {
+              std::vector<std::string> out_paths;
 
-        for (auto& path : paths) {
-            out_paths.emplace_back(replace_prefix(prefix_map, path));
-        }
+              for (auto& path : paths) {
+                  out_paths.emplace_back(replace_prefix(prefix_map, path));
+              }
 
-        notify_plugin.notify(filter_feedback(feedback_map, out_paths));
-    };
+              notify_plugin.notify(filter_feedback(feedback_map, out_paths));
+          };
 
     WATCH_PLUGIN_TYPE plugin(watch_paths, callback);
     SignalOverride(SIGINT, handle_sigint);

@@ -10,13 +10,18 @@
 class FSEventsWatchPluginImpl;
 
 class FSEventsWatchPlugin : public IWatchPlugin {
-    public: FSEventsWatchPlugin(
-        const std::vector<std::string>& paths,
-        const WatchCallback& callback);
-    public: ~FSEventsWatchPlugin();
+public:
+    FSEventsWatchPlugin(const std::vector<std::string>& paths, const WatchCallback& callback);
 
-    public: virtual void start();
-    public: virtual void stop();
+public:
+    ~FSEventsWatchPlugin();
 
-    private: std::unique_ptr<FSEventsWatchPluginImpl> m_impl;
+public:
+    virtual void start();
+
+public:
+    virtual void stop();
+
+private:
+    std::unique_ptr<FSEventsWatchPluginImpl> m_impl;
 };

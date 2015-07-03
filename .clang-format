@@ -1,0 +1,6 @@
+BasedOnStyle: WebKit
+IndentWidth: 4
+BinPackArguments: false
+BinPackParameters: false
+ColumnLimit: 100
+Standard: Cpp11

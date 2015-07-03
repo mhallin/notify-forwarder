@@ -8,16 +8,13 @@ class NullWatchPluginImpl {
 };
 
 NullWatchPlugin::NullWatchPlugin(
-    __unused const std::vector<std::string>& paths,
-    __unused const WatchCallback& callback)
-: m_impl(new NullWatchPluginImpl()) {
+    __unused const std::vector<std::string>& paths, __unused const WatchCallback& callback)
+    : m_impl(new NullWatchPluginImpl())
+{
 }
 
-NullWatchPlugin::~NullWatchPlugin() {
-}
+NullWatchPlugin::~NullWatchPlugin() {}
 
-void NullWatchPlugin::start() {
-}
+void NullWatchPlugin::start() {}
 
-void NullWatchPlugin::stop() {
-}
+void NullWatchPlugin::stop() {}

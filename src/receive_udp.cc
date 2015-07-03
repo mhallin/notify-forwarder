@@ -1,23 +1,27 @@
-#include <unistd.h>
-#include <sys/param.h>
 #include <arpa/inet.h>
 #include <errno.h>
-#include <string.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
+#include <string.h>
+#include <sys/param.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 #include "receive_udp.h"
 
 class UDPReceivePluginImpl {
-    public: ReceiveCallback callback;
-    public: int socket_fd;
-    public: bool running;
+public:
+    ReceiveCallback callback;
+
+public:
+    int socket_fd;
+
+public:
+    bool running;
 };
 
-UDPReceivePlugin::UDPReceivePlugin(
-    short port,
-    const ReceiveCallback& callback)
-: m_impl(new UDPReceivePluginImpl()) {
+UDPReceivePlugin::UDPReceivePlugin(short port, const ReceiveCallback& callback)
+    : m_impl(new UDPReceivePluginImpl())
+{
     m_impl->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (m_impl->socket_fd == -1) {
         throw std::runtime_error("Could not create sending socket");
@@ -29,10 +33,8 @@ UDPReceivePlugin::UDPReceivePlugin(
     dest_addr.sin_addr.s_addr = inet_addr("0.0.0.0");
     dest_addr.sin_port = htons(port);
 
-    int bind_result = bind(
-        m_impl->socket_fd,
-        reinterpret_cast<sockaddr*>(&dest_addr),
-        sizeof(dest_addr));
+    int bind_result
+        = bind(m_impl->socket_fd, reinterpret_cast<sockaddr*>(&dest_addr), sizeof(dest_addr));
 
     if (bind_result != 0) {
         throw std::runtime_error("Could not bind listening socket");
@@ -41,12 +43,7 @@ UDPReceivePlugin::UDPReceivePlugin(
     struct timeval tv;
     tv.tv_sec = 0;
     tv.tv_usec = 100000;
-    int sockopt_result = setsockopt(
-        m_impl->socket_fd,
-        SOL_SOCKET,
-        SO_RCVTIMEO,
-        &tv,
-        sizeof(tv));
+    int sockopt_result = setsockopt(m_impl->socket_fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
     if (sockopt_result != 0) {
         throw std::runtime_error("Could not set socket timeout");
@@ -56,13 +53,15 @@ UDPReceivePlugin::UDPReceivePlugin(
     m_impl->running = true;
 }
 
-UDPReceivePlugin::~UDPReceivePlugin() {
+UDPReceivePlugin::~UDPReceivePlugin()
+{
     if (m_impl->socket_fd >= 0) {
         close(m_impl->socket_fd);
     }
 }
 
-void UDPReceivePlugin::start() {
+void UDPReceivePlugin::start()
+{
     char buffer[MAXPATHLEN];
     sockaddr_in src_addr;
     socklen_t src_addr_len = sizeof(src_addr);
@@ -70,8 +69,7 @@ void UDPReceivePlugin::start() {
     while (m_impl->running) {
         memset(&src_addr, 0, sizeof(src_addr));
 
-        ssize_t bytes_read = recvfrom(
-            m_impl->socket_fd,
+        ssize_t bytes_read = recvfrom(m_impl->socket_fd,
             buffer,
             sizeof(buffer),
             0,
@@ -88,6 +86,4 @@ void UDPReceivePlugin::start() {
     }
 }
 
-void UDPReceivePlugin::stop() {
-    m_impl->running = false;
-}
+void UDPReceivePlugin::stop() { m_impl->running = false; }

@@ -4,10 +4,10 @@
 
 #include "inject_utimes.h"
 
-UtimesInjectPlugin::~UtimesInjectPlugin() {
-}
+UtimesInjectPlugin::~UtimesInjectPlugin() {}
 
-void UtimesInjectPlugin::inject(const std::vector<std::string>& paths) {
+void UtimesInjectPlugin::inject(const std::vector<std::string>& paths)
+{
     for (const auto& path : paths) {
         utimes(path.c_str(), nullptr);
     }

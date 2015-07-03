@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include <sysexits.h>
 #include <string.h>
+#include <sysexits.h>
 
 #include "main.h"
 #include "utils.h"
@@ -15,7 +15,8 @@
 
 static IReceivePlugin* gCurrentReceiveInstance = nullptr;
 
-static void handle_sigint(__unused int signal) {
+static void handle_sigint(__unused int signal)
+{
     if (gCurrentReceiveInstance) {
         gCurrentReceiveInstance->stop();
     }
@@ -24,14 +25,16 @@ static void handle_sigint(__unused int signal) {
     }
 }
 
-static void print_usage(char *argv0) {
+static void print_usage(char* argv0)
+{
     fprintf(stderr, "Usage: %s receive [-p port]\n", argv0);
     fprintf(stderr, "\n");
     fprintf(stderr, "  -p port  specifies which ports to listen to. Defaults to 29324\n");
     fprintf(stderr, "\n");
 }
 
-int main_receive(char* argv0, int argc, char** argv) {
+int main_receive(char* argv0, int argc, char** argv)
+{
     UtimesInjectPlugin injector;
 
     short port = 29324;
@@ -48,9 +51,8 @@ int main_receive(char* argv0, int argc, char** argv) {
         return EX_USAGE;
     }
 
-    ReceiveCallback callback = [&injector](std::vector<std::string> paths) {
-        injector.inject(paths);
-    };
+    ReceiveCallback callback
+        = [&injector](std::vector<std::string> paths) { injector.inject(paths); };
 
     UDPReceivePlugin receive_plugin(port, callback);
     SignalOverride(SIGINT, handle_sigint);
