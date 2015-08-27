@@ -3,10 +3,12 @@
 =========
 
 
-Unreleased
-==========
+0.1.1_ - 2015-08-27
+===================
 
-No changes yet.
+Bugfixes:
+
+* Segmentation fault on OS X when specifying multiple paths
 
 
 0.1.0_ - 2015-07-03
@@ -21,3 +23,4 @@ Initial release
 
 
 .. _0.1.0: https://github.com/mhallin/notify-forwarder/releases/tag/release%2Fv0.1.0
+.. _0.1.1: https://github.com/mhallin/notify-forwarder/releases/tag/release%2Fv0.1.1
