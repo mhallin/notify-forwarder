@@ -37,7 +37,7 @@ FSEventsWatchPlugin::FSEventsWatchPlugin(
     : m_impl(new FSEventsWatchPluginImpl())
 {
 
-    CFMutableArrayRef paths_array = CFArrayCreateMutable(kCFAllocatorDefault, 0, nullptr);
+    CFMutableArrayRef paths_array = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
 
     for (auto& path : paths) {
         CFStringRef path_str
