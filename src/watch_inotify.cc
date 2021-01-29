@@ -49,7 +49,13 @@ void add_directory_watch(int fd, const std::string& root, DirectoryMap& director
             int sresult = stat(path.c_str(), &stat_result);
 
             if (sresult != 0) {
-                throw std::logic_error("Could not stat file of unknown type");
+				struct stat lstat_result;
+				int lsresult = lstat(path.c_str(), &lstat_result);
+
+				if (lsresult !=0) {
+					throw std::logic_error("Could not stat file of unknown type");
+				}
+				// It's a dangling symlink, move on.
             }
 
             if (stat_result.st_mode & S_IFDIR) {
