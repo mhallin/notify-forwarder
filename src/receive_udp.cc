@@ -1,6 +1,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/in.h>
+#include <stdexcept>
 #include <string.h>
 #include <sys/param.h>
 #include <sys/socket.h>

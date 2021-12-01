@@ -1,5 +1,6 @@
 #include <dirent.h>
 #include <signal.h>
+#include <stdexcept>
 #include <string.h>
 #include <sys/inotify.h>
 #include <sys/stat.h>
